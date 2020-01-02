@@ -1,0 +1,50 @@
+---
+- hosts: cms
+  tasks:
+
+  - name: Delete repo jenkins
+    apt_repository:
+      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      state: absent
+    tags:
+    - repo::remove
+  
+  - name: Install a list of packages from jenkins (java)
+    apt:
+      name: "{{ packages }}"
+      update_cache: yes
+    vars:
+      packages:
+      - openjdk-8-jre
+    tags:
+      - add::java
+
+  - name: Add an apt key by id from a keyserver
+    apt_key:
+      url: https://pkg.jenkins.io/debian/jenkins.io.key
+    tags: key
+
+  - name: Add repo jenkins
+    apt_repository:
+      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      state: present
+    tags:
+    - repo::add
+
+  - name: Update all packages to the latest version
+    apt:
+      upgrade: dist
+    tags:
+    - update::all
+
+  - name: Install a jenkins
+    apt:
+      name: jenkins
+      update_cache: yes
+    tags:
+    - add::jenkins
+
+  - name: reset ssh connection
+    meta: reset_connection 
+    tags:
+    - reset 

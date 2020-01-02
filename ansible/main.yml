@@ -1,0 +1,13 @@
+---
+all:
+  children:
+    home:
+       hosts:
+         cms:
+           ansible_ssh_user: vagrant
+           ansible_host: 192.168.100.40 #192.168.100.112
+           #  notebook:
+           #  ansible_user: devops
+           #  ansible_host: localhost
+
+

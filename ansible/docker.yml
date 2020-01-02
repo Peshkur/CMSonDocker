@@ -1,0 +1,61 @@
+---
+- hosts: cms
+  tasks:
+
+  - name: Delete repo docker
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
+      state: absent
+    tags:
+    - repo::add
+  
+  - name: Install a list of packages from docker
+    apt:
+      name: "{{ packages }}"
+      update_cache: yes
+    vars:
+      packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+    tags:
+      - add::subpac
+
+  - name: Add an apt key by id from a keyserver
+    apt_key:
+      url: https://download.docker.com/linux/debian/gpg
+    tags: key
+
+  - name: Add repo docker
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
+      state: present
+    tags:
+    - repo::add
+
+  - name: Update all packages to the latest version
+    apt:
+      upgrade: dist
+    tags:
+    - update::all
+
+  - name: Install a docker-ce
+    apt:
+      name: docker-ce
+      update_cache: yes
+    tags:
+    - add::docker
+
+  - name: Add user from  docker group
+    user:
+      name: vagrant
+      comment: addindockergroup
+      groups: docker,vagrant
+      append: yes
+  
+  - name: reset ssh connection
+    meta: reset_connection 
+    tags:
+    - reset 
